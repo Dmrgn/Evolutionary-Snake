@@ -4,8 +4,7 @@
 // cell variables
 export const SIMULATION_SPEED = 1000;
 export const SELECTION_TIMER = 240;
-export const NUM_STARTING_CELLS = 200;
-export const CELL_STARTING_FOOD_AMOUNT = 10;
+export const NUM_STARTING_CELLS = 1000;
 export const CELL_MUTATION_AMOUNT = 1;
 // network config
 export const CELL_NETWORK_CONFIG = {
@@ -25,11 +24,31 @@ export const CELL_HEIGHT = 100;
 */
 
 // useful stuff
-export const DIRS = [
+export const ADJ_DIRS = [
     {x:-1, y:0}, // left
     {x:0, y:-1}, // up
     {x:1, y:0}, // right
     {x:0, y:1}, // down
+];
+
+// useful stuff
+export const DIA_DIRS = [
+    {x:-1, y:-1}, // up left
+    {x:1, y:-1}, // up right
+    {x:1, y:1}, // down right
+    {x:-1, y:1}, // down left
+];
+
+// useful stuff
+export const DIRS = [
+    {x:-1, y:0}, // left
+    {x:-1, y:-1}, // up left
+    {x:0, y:-1}, // up
+    {x:1, y:-1}, // up right
+    {x:1, y:0}, // right
+    {x:1, y:1}, // down right
+    {x:0, y:1}, // down
+    {x:-1, y:1}, // down left
 ];
 
 // calculated constants

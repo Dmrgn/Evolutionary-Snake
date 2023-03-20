@@ -1,8 +1,8 @@
 import brain from 'brain.js';
 import r from 'raylib';
 
-import { CELL_DRAW_HEIGHT, CELL_DRAW_WIDTH, CELL_HEIGHT, CELL_MUTATION_AMOUNT, CELL_NETWORK_CONFIG, CELL_STARTING_FOOD_AMOUNT, CELL_WIDTH, DIRS } from "./constants.js";
-import { cellMap } from './main.js';
+import { ADJ_DIRS, CELL_DRAW_HEIGHT, CELL_DRAW_WIDTH, CELL_HEIGHT, CELL_MUTATION_AMOUNT, CELL_NETWORK_CONFIG, CELL_WIDTH, DIA_DIRS, DIRS, SELECTION_TIMER, SIMULATION_SPEED } from "./constants.js";
+import { cellMap, frameCount } from './main.js';
 
 /*
 
@@ -12,11 +12,9 @@ Enough food -> reproduce
 */
 
 export class Cell {
-    food = null;
     id = null;
     pos = null;
     constructor (x, y, parent) {
-        this.food = CELL_STARTING_FOOD_AMOUNT;
         this.pos = {x:x, y:y};
         this.network = new brain.NeuralNetwork(CELL_NETWORK_CONFIG);
         this.network.initialize();
@@ -38,9 +36,6 @@ export class Cell {
         if (ymod < 0) ymod = CELL_HEIGHT+ymod;
         return {x: xmod, y: ymod};
     }
-    static randOf() { // random index within passed array bounds
-
-    }
     move(dirIndex) {
         const {x: xmod, y: ymod} = Cell.wrapPos({x:this.pos.x+DIRS[dirIndex].x, y:this.pos.y+DIRS[dirIndex].y});
         if (cellMap[ymod][xmod] === 1) return;
@@ -52,11 +47,14 @@ export class Cell {
     }
     select() {
         // should be overridden by subclasses to determine selection conditions for the cell
+        if (this.pos.x > CELL_WIDTH/3 && this.pos.x < 2*CELL_WIDTH/3)
+            return true;
+        return false;
     }
     update(index) {
         // generate network inputs
         // neighbouring cells
-        const inputs = DIRS.map((dir)=>{
+        const inputs = ADJ_DIRS.map((dir)=>{
             const {x: xmod, y: ymod} = Cell.wrapPos({x:this.pos.x+dir.x, y:this.pos.y+dir.y});
             return cellMap[ymod][xmod];
         });
@@ -82,8 +80,10 @@ export class Cell {
             case 3: // move down
                 this.move(3);
                 break;
-            case 4: // move randomly
-                this.move(Math.floor(Math.random()*4));
+            // case 4: // move randomly
+            //     this.move(Math.floor(Math.random()*4));
+            //     break;
+            case 4: // stay still
                 break;
             default:
                 console.log("hmm invalid action", action);
@@ -92,5 +92,6 @@ export class Cell {
     }
     draw() {
         // should be overridden by subclasses
+        r.DrawEllipse(this.pos.x*CELL_DRAW_WIDTH+CELL_DRAW_WIDTH/2, this.pos.y*CELL_DRAW_HEIGHT+CELL_DRAW_HEIGHT/2, CELL_DRAW_WIDTH/2, CELL_DRAW_HEIGHT/2, r.BLACK);
     }
 }
