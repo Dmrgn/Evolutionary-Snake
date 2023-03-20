@@ -1,0 +1,16 @@
+{
+  "name": "network",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "brain.js": "^2.0.0-beta.18",
+    "raylib": "^0.14.0"
+  }
+}
