@@ -2,9 +2,9 @@
  =================================================================
 */
 // cell variables
-export const SIMULATION_SPEED = 100;
-export const SELECTION_TIMER = 30;
-export const NUM_STARTING_CELLS = 100;
+export const SIMULATION_SPEED = 1000;
+export const SELECTION_TIMER = 240;
+export const NUM_STARTING_CELLS = 200;
 export const CELL_STARTING_FOOD_AMOUNT = 10;
 export const CELL_MUTATION_AMOUNT = 1;
 // network config
@@ -18,8 +18,8 @@ export const CELL_NETWORK_CONFIG = {
 // screen size
 export const SCREEN_WIDTH = 800;
 export const SCREEN_HEIGHT = 800;
-export const CELL_WIDTH = 20;
-export const CELL_HEIGHT = 20;
+export const CELL_WIDTH = 100;
+export const CELL_HEIGHT = 100;
 /* edit stuff above this line
  =================================================================
 */
