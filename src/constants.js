@@ -1,56 +1,45 @@
-/* edit stuff below this line
- =================================================================
-*/
-// cell variables
-export const SIMULATION_SPEED = 1000;
-export const SELECTION_TIMER = 240;
-export const NUM_STARTING_CELLS = 1000;
-export const CELL_MUTATION_AMOUNT = 1;
-// network config
-export const CELL_NETWORK_CONFIG = {
-    binaryThresh: 0.5,
-    activation: 'sigmoid',
-    inputSize: 6, // adjacent cells + normalized x + normalized y
-    hiddenLayers: [4, 4], // abritrary
-    outputSize: 5, // move to adjacent cells + random direction
-};
-// screen size
+export const NUM_SNAKES = 1000;
+export const NUM_ALPHA_SNAKES = 50;
+export const SNAKE_MUTATION_AMOUNT = 10;
+export const MAX_FRAMES_SINCE_FOOD = 20;
+export const MAX_GENERATION_DURATION = 50;
+export const SLOW_FRAME_RATE = 10;
+export const FAST_FRAME_RATE = 1000;
+export const MAP_WIDTH = 11;
+export const MAP_HEIGHT = 11;
 export const SCREEN_WIDTH = 800;
 export const SCREEN_HEIGHT = 800;
-export const CELL_WIDTH = 100;
-export const CELL_HEIGHT = 100;
-/* edit stuff above this line
- =================================================================
-*/
+export const SAVE_EVERY_N_GENERATIONS = 10;
+export const SAVE_FILE_NAME = "snake_save.json";
 
-// useful stuff
+export const SNAKE_DRAW_WIDTH = SCREEN_WIDTH/MAP_WIDTH;
+export const SNAKE_DRAW_HEIGHT = SCREEN_HEIGHT/MAP_HEIGHT;
+
 export const ADJ_DIRS = [
-    {x:-1, y:0}, // left
-    {x:0, y:-1}, // up
-    {x:1, y:0}, // right
-    {x:0, y:1}, // down
+    {x: -1, y: 0}, // left
+    {x: 0, y: -1}, // up
+    {x: 1, y: 0}, // right
+    {x: 0, y: 1}, // down
 ];
-
-// useful stuff
 export const DIA_DIRS = [
-    {x:-1, y:-1}, // up left
-    {x:1, y:-1}, // up right
-    {x:1, y:1}, // down right
-    {x:-1, y:1}, // down left
+    {x: -1, y: -1}, // up left
+    {x: 1, y: -1}, // up right
+    {x: 1, y: 1}, // down right
+    {x: -1, y: 1}, // down left
 ];
-
-// useful stuff
 export const DIRS = [
-    {x:-1, y:0}, // left
-    {x:-1, y:-1}, // up left
-    {x:0, y:-1}, // up
-    {x:1, y:-1}, // up right
-    {x:1, y:0}, // right
-    {x:1, y:1}, // down right
-    {x:0, y:1}, // down
-    {x:-1, y:1}, // down left
+    {x: -1, y: 0}, // left
+    {x: -1, y: -1}, // up left
+    {x: 0, y: -1}, // up
+    {x: 1, y: -1}, // up right
+    {x: 1, y: 0}, // right
+    {x: 1, y: 1}, // down right
+    {x: 0, y: 1}, // down
+    {x: -1, y: 1}, // down left
 ];
-
-// calculated constants
-export const CELL_DRAW_WIDTH = SCREEN_WIDTH/CELL_WIDTH;
-export const CELL_DRAW_HEIGHT = SCREEN_HEIGHT/CELL_HEIGHT;
+export const WALL_LINES = [
+    [[0, 0], [0, MAP_HEIGHT]],
+    [[0, 0], [MAP_WIDTH, 0]],
+    [[MAP_WIDTH, 0], [MAP_WIDTH, MAP_HEIGHT]],
+    [[0, MAP_HEIGHT], [MAP_WIDTH, MAP_HEIGHT]],
+];

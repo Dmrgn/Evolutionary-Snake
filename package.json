@@ -11,6 +11,9 @@
   "type": "module",
   "dependencies": {
     "brain.js": "^2.0.0-beta.18",
+    "express": "^4.18.2",
+    "geometric": "^2.5.0",
+    "pathfinding": "^0.4.18",
     "raylib": "^0.14.0"
   }
 }

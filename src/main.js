@@ -1,89 +1,94 @@
-import brain from 'brain.js';
-import r from 'raylib'
+import r from 'raylib';
 import fs from 'fs';
+import path from 'path';
+import brain from 'brain.js';
 
-import { Cell } from './cell.js';
-import { CELL_HEIGHT, CELL_NETWORK_CONFIG, CELL_WIDTH, NUM_STARTING_CELLS, SCREEN_HEIGHT, SCREEN_WIDTH, SELECTION_TIMER, SIMULATION_SPEED } from './constants.js';
+import { Snake } from './snake.js';
+import { SCREEN_WIDTH, SCREEN_HEIGHT, NUM_ALPHA_SNAKES, NUM_SNAKES, SAVE_EVERY_N_GENERATIONS, FAST_FRAME_RATE, SAVE_FILE_NAME, SLOW_FRAME_RATE, MAX_GENERATION_DURATION } from './constants.js';
+const NETWORK_DATA = JSON.parse(fs.readFileSync(path.resolve("./server/src/data/snake.json")));
 
-export let frameCount = 0;
+let snakes = [];
+let stillAlive = false;
 let gen = 0;
-let deaths = 0;
+let framesSinceLastGen = 0;
+let topScore = 0;
+let avgScore = 0;
 
-// init cells
-export let cellMap = []; // [y][x]
-for (let i = 0; i < CELL_WIDTH; i++) {
-    cellMap.push([]);
-    for (let j = 0; j < CELL_HEIGHT; j++) {
-        cellMap[i].push(0);
-    }
+export function prolongGen() {
+    framesSinceLastGen = 0;
 }
 
-export let cells = [];
-for (let i = 0; i < NUM_STARTING_CELLS; i++) {
-    const randX = Math.floor(Math.random() * CELL_WIDTH);
-    const randY = Math.floor(Math.random() * CELL_HEIGHT);
-    cells.push(new Cell(randX, randY));
-    cellMap[randY][randX] = 1;
+// init snakes
+for (let i = 0; i < NUM_SNAKES; i++) {
+    snakes.push(new Snake({network:new brain.NeuralNetwork(Snake.config).fromJSON(NETWORK_DATA)}));
 }
-export let survivingCells = [];
 
 // start drawing loop
-r.InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Genetic Simulation")
-r.SetTargetFPS(SIMULATION_SPEED*r.GetMouseX()/SCREEN_WIDTH);
+r.InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Snake Sim")
+r.SetTargetFPS(FAST_FRAME_RATE);
 while (!r.WindowShouldClose()) {
-    frameCount++;
     r.BeginDrawing();
     r.ClearBackground(r.GRAY);
 
-    if (frameCount%SELECTION_TIMER === 0) {
-        survivingCells = [];
+    // update snakes
+    stillAlive = false;
+    let hasShown = false;
+    for (let i = 0; i < snakes.length; i++) {
+        if (!snakes[i].isDead) {
+            stillAlive = true;
+            snakes[i].update(!hasShown);
+            if (!hasShown) {
+                snakes[i].draw();
+                hasShown = true;
+            }
+        }
+    }
+
+    // check if gen is over
+    if (!stillAlive || framesSinceLastGen > MAX_GENERATION_DURATION) {
+        // sort snakes by score
+        snakes.sort(Snake.snakeSorter);
+        if (snakes[0].score > topScore) topScore = snakes[0].score;
+        avgScore = 0;
+        snakes.forEach((snake)=>{
+            avgScore+=snake.score;
+        });
+        avgScore/= NUM_SNAKES;
+        // separate top n snakes
+        let alphas = [];
+        for (let i = 0; i < NUM_ALPHA_SNAKES; i++)
+            alphas.push(snakes.shift());
+        // save top alpha to file every n generations
+        if (gen%SAVE_EVERY_N_GENERATIONS === 0)
+            fs.writeFileSync(SAVE_FILE_NAME, JSON.stringify(alphas[0].network.toJSON()));
+        // create next generation
+        snakes = [];
+        for (let i = 0; i < NUM_SNAKES-NUM_ALPHA_SNAKES; i++) {
+            snakes.push(new Snake(alphas[Math.floor(Math.random() * alphas.length)]));
+        }
+        // add back alphas
+        for (let i = 0; i < NUM_ALPHA_SNAKES; i++) {
+            snakes.push(alphas.shift().reset());
+        }
+        // increase gen number
         gen++;
-        if (r.GetMouseX() < SCREEN_WIDTH/2)
-            r.SetTargetFPS(2);
+        framesSinceLastGen = 0;
+    }
+
+    // set frame rate
+    if (r.GetMouseX() > SCREEN_WIDTH/2) {
+        r.SetTargetFPS(FAST_FRAME_RATE);
     } else {
-        r.SetTargetFPS(SIMULATION_SPEED*r.GetMouseX()/SCREEN_WIDTH);
+        r.SetTargetFPS(SLOW_FRAME_RATE);
     }
-    cells.forEach((cell, i)=>{
-        cell.update(i);
-        cell.draw(r);
-        if (frameCount%SELECTION_TIMER === 0)
-            if (cell.select()) {
-                console.log("here");
-                survivingCells.push(cell);
-            }
-    });
-    if (frameCount%SELECTION_TIMER === 0) {
-        cells = [];
-        cellMap = []; // [y][x]
-        for (let i = 0; i < CELL_WIDTH; i++) {
-            cellMap.push([]);
-            for (let j = 0; j < CELL_HEIGHT; j++) {
-                cellMap[i].push(0);
-            }
-        }
+    framesSinceLastGen++;
 
-        deaths = NUM_STARTING_CELLS-survivingCells.length;
-        for (let i = 0; i < deaths; i++) {
-            const randX = Math.floor(Math.random() * CELL_WIDTH);
-            const randY = Math.floor(Math.random() * CELL_HEIGHT);
-            const randomSurvivingIndex = Math.floor(Math.random() * survivingCells.length);
-            cells.push(new Cell(randX, randY, survivingCells[randomSurvivingIndex]));
-        }
-
-        for (let i = 0; i < survivingCells.length; i++) {
-            survivingCells[i].pos.x = Math.floor(Math.random() * CELL_WIDTH);
-            survivingCells[i].pos.y = Math.floor(Math.random() * CELL_HEIGHT);
-            cells.push(survivingCells[i]);
-        }
-
-        survivingCells = [];
-        r.DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, r.ColorAlpha(r.BLACK, 0.2));
-    }
-
-    r.DrawText(""+frameCount%SELECTION_TIMER, 10, 60, 40, r.BLACK);
-    r.DrawText("Gen:"+gen, 10, 120, 40, r.BLACK);
-    r.DrawText("Deaths:"+deaths, 10, 180, 40, r.GREEN);
+    // draw ui
     r.DrawFPS(10, 10);
+    r.DrawText("Gen: " + gen, 10, 30, 50, r.BLACK);
+    r.DrawText("Gen Frames: " + framesSinceLastGen, 10, 80, 50, r.BLACK);
+    r.DrawText("Top Score: " + topScore, 10, 130, 50, r.BLACK);
+    r.DrawText("Avg Score: " + avgScore, 10, 180, 50, r.BLACK);
 
     r.EndDrawing();
 }

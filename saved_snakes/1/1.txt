@@ -1,0 +1,48 @@
+First test:
+    Generations: 19900
+    Top Score: 125
+    Avg Score: 34
+
+Notes:
+    Each snake gained 1 fitness for each move without dying and 10 fitness for each collected cherry.
+    I don't think that I favoured eating cherries enough in the snake's fitness.
+
+Inputs:
+    let inputs = [];
+    // add tail map
+    let unflattenedTail = Snake.createEmptyMap();
+    this.tail.forEach((piece)=>{
+        unflattenedTail[piece.y][piece.x] = 1;
+    });
+    inputs.push(...Snake.flattenMap(unflattenedTail));
+    // add food map
+    let unflattenedFood = Snake.createEmptyMap();
+    this.food.forEach((piece)=>{
+        unflattenedFood[piece.y][piece.x] = 1;
+    });
+    inputs.push(...Snake.flattenMap(unflattenedFood));
+    // add snake pos
+    inputs.push(this.pos.x/MAP_WIDTH, this.pos.y/MAP_HEIGHT);
+
+
+Settings:
+    export const NUM_SNAKES = 1000;
+    export const NUM_ALPHA_SNAKES = 100;
+    export const SNAKE_MUTATION_AMOUNT = 10;
+    export const MAX_GENERATION_DURATION = 50;
+    export const SLOW_FRAME_RATE = 10;
+    export const FAST_FRAME_RATE = 1000;
+    export const MAP_WIDTH = 11;
+    export const MAP_HEIGHT = 11;
+    export const SCREEN_WIDTH = 800;
+    export const SCREEN_HEIGHT = 800;
+    export const SAVE_EVERY_N_GENERATIONS = 10;
+    export const SAVE_FILE_NAME = "snake_save.json";
+
+    static config = {
+        binaryThresh: 0.5, // ¯\_(ツ)_/¯
+        activation: 'sigmoid',
+        inputSize: MAP_HEIGHT*MAP_WIDTH*2+2, // food and tail maps + snake pos
+        hiddenLayers: [16, 16],
+        outputSize: 4,
+    };

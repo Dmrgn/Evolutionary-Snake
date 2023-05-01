@@ -1,0 +1,40 @@
+Second test:
+    Generations: 2250
+    Top Score: 21
+    Avg Score: 4.5
+
+Notes:
+    No fitness was gained for suriving
+    1 fitness was gained for eating a cherry
+
+Inputs:
+    let inputs = [];
+    DIRS.forEach((dir)=>{
+        const line = [[this.pos.x+dir.x+0.5, this.pos.y+dir.y+0.5], [this.pos.x+dir.x*MAP_WIDTH+0.5, this.pos.y+dir.y*MAP_HEIGHT+0.5]];
+        // check intersection with each food, tail piece
+        inputs.push(Snake.shortestDistanceIntersectionOfPointsAndLine(this.food, line, shouldDraw));
+        inputs.push(Snake.shortestDistanceIntersectionOfPointsAndLine(this.tail, line, shouldDraw));
+    });
+    inputs.push(this.pos.x/MAP_WIDTH, this.pos.y/MAP_HEIGHT);
+
+Settings:
+    export const NUM_SNAKES = 1000;
+    export const NUM_ALPHA_SNAKES = 100;
+    export const SNAKE_MUTATION_AMOUNT = 3;
+    export const MAX_GENERATION_DURATION = 120;
+    export const SLOW_FRAME_RATE = 1;
+    export const FAST_FRAME_RATE = 1000;
+    export const MAP_WIDTH = 11;
+    export const MAP_HEIGHT = 11;
+    export const SCREEN_WIDTH = 800;
+    export const SCREEN_HEIGHT = 800;
+    export const SAVE_EVERY_N_GENERATIONS = 10;
+    export const SAVE_FILE_NAME = "snake_save.json";
+
+    static config = {
+        binaryThresh: 0.5, // ¯\_(ツ)_/¯
+        activation: 'sigmoid',
+        inputSize: 18, // distance to tail and food in each of 8 directions + current pos
+        hiddenLayers: [16, 16],
+        outputSize: 4,
+    };
