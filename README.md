@@ -2,6 +2,8 @@
 
 This project uses [brainjs](https://brain.js.org/#/) and an evolutionary algorithm to develop neural networks to play the classic game of snake.
 
+![snake in action](image.png)
+
 ## How
 
 1000 snakes are created every generation and simulate moving about the board and collecting food.
